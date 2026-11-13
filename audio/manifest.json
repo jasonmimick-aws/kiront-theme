@@ -1,0 +1,7 @@
+{
+  "triggers": {
+    "activate": { "src": "audio/startup.wav", "volume": 0.45 },
+    "notification": { "src": "audio/ding.wav", "volume": 0.35 },
+    "error": { "src": "audio/error.wav", "volume": 0.35 }
+  }
+}

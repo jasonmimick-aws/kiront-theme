@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  /* Shown once when Kiro NT is switched on: a Begin Logon dialog that "logs
+     you on" and fades away. Click-through; it decorates, never blocks. */
+  html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; font: 12px/1.35 Tahoma, "Segoe UI", system-ui, sans-serif; }
+  .dlg { width: 380px; max-width: 94vw; padding: 3px; background: #c0c0c0; color: #000;
+         box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px #808080, inset 2px 2px #fff, 4px 4px 0 rgba(0,0,0,.35);
+         transition: opacity .5s ease, transform .5s ease; }
+  .dlg.out { opacity: 0; transform: translateY(6px); }
+  .tb { height: 20px; padding: 0 4px; display: flex; align-items: center; background: #000080; color: #fff; font-weight: 700; }
+  .banner { margin: 3px 0 0; height: 64px; display: flex; align-items: center; gap: 12px; padding: 0 14px;
+            background: linear-gradient(90deg, #000000 0%, #000080 70%, #0a2a9a 100%); color: #fff; }
+  .banner img { width: 34px; height: 36px; image-rendering: pixelated; }
+  .banner b { font: 900 26px/1 "Arial Black", Helvetica, sans-serif; letter-spacing: .5px; }
+  .banner b span { color: #ffb000; }
+  .banner small { display: block; font-size: 11px; color: #c8d0ff; margin-top: 3px; }
+  .body { display: flex; gap: 14px; align-items: center; padding: 16px 14px 10px; min-height: 64px; }
+  .keys { display: flex; gap: 4px; }
+  .key { min-width: 34px; height: 28px; padding: 0 6px; display: flex; align-items: center; justify-content: center;
+         background: #dfdfdf; color: #000; font-weight: 700; font-size: 11px;
+         box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080; transition: transform .08s, box-shadow .08s; }
+  .key.down { transform: translateY(1px); box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #fff, inset 2px 2px #808080; }
+  .bar { height: 14px; margin-top: 8px; padding: 2px; box-shadow: inset 1px 1px #808080, inset -1px -1px #fff; display: none; }
+  .bar i { display: block; height: 100%; width: 0; background: repeating-linear-gradient(90deg, #000080 0 8px, transparent 8px 10px); transition: width 1.6s linear; }
+  .act { display: flex; justify-content: flex-end; gap: 6px; padding: 0 10px 10px; }
+  .btn { min-width: 72px; height: 23px; display: flex; align-items: center; justify-content: center; background: #c0c0c0;
+         box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf; }
+</style>
+</head>
+<body>
+<div class="dlg" id="dlg">
+  <div class="tb">Begin Logon</div>
+  <div class="banner"><img id="g" alt=""><div><b>Kiro <span>NT</span></b><small>Workstation &middot; agents, sessions and crons</small></div></div>
+  <div class="body">
+    <div class="keys"><div class="key" id="k1">Ctrl</div><div class="key" id="k2">Alt</div><div class="key" id="k3">Del</div></div>
+    <div style="flex:1"><div id="msg">Press Ctrl+Alt+Delete to log on.</div><div class="bar" id="bar"><i id="fill"></i></div></div>
+  </div>
+  <div class="act"><div class="btn">Help</div></div>
+</div>
+<script>
+(function () {
+  var G = ['....KKKKKK....','..KKWWWWWWKK..','.KWWWWWWWWWWK.','.KWWWWWWWWWWK.','KWWWEEWWEEWWWK','KWWWEEWWEEWWWK','KWWWWWWWWWWWWK','KWWWWWWWWWWWWK','KWWWWWWWWWWWWK','KWWWWWWWWWWWWK','KWWWWWWWWWWWWK','KWWWWWWWWWWWWK','KWWKKWWWWKKWWK','KWK..KWWK..KWK','KK....KK....KK'];
+  var r = '';
+  G.forEach(function (row, y) { for (var x = 0; x < row.length; x++) { var c = row[x]; if (c !== '.') r += '<rect x="' + x + '" y="' + y + '" width="1" height="1" fill="' + (c === 'W' ? '#fff' : '#0a0a0a') + '"/>'; } });
+  document.getElementById('g').src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 15" shape-rendering="crispEdges">' + r + '</svg>');
+  var $ = function (id) { return document.getElementById(id); };
+  var at = function (ms, fn) { setTimeout(fn, ms); };
+  at(1400, function () { $('k1').className = 'key down'; });
+  at(1600, function () { $('k2').className = 'key down'; });
+  at(1800, function () { $('k3').className = 'key down'; });
+  at(2200, function () {
+    ['k1', 'k2', 'k3'].forEach(function (k) { $(k).className = 'key'; });
+    $('msg').textContent = 'Logging on to Kiro Crew…';
+    $('bar').style.display = 'block';
+    requestAnimationFrame(function () { $('fill').style.width = '100%'; });
+  });
+  at(4000, function () { $('msg').textContent = 'Welcome. Your crew is ready.'; });
+  at(5600, function () { $('dlg').className = 'dlg out'; });
+  at(6200, function () { parent.postMessage({ type: 'theme:visibility', visible: false }, '*'); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+/*
+ * Kiro NT — late-90s workstation chrome for Kiro Crew.
+ *
+ * The runtime keeps only rules on the stable hooks (body, .topbar, .sidebar,
+ * .chat-container, .message-bubble, .input-area, .code-block, button.primary),
+ * with no descendant selectors. Two tricks stretch that a long way:
+ *   1. Custom properties cascade, so redefining --radius-* / --text / --muted
+ *      on a hook re-skins everything inside it without naming the children.
+ *   2. Bevels are inset box-shadows, so they never change layout.
+ *
+ * Bevel recipe (2px):  raised = light top-left, dark bottom-right
+ *                      sunken = the reverse
+ */
+
+/* ── Whole app: square corners, crisp pixels, silver scrollbars, teal desktop ── */
+body {
+  --radius: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  -webkit-font-smoothing: none;
+  scrollbar-color: #c0c0c0 #dfdfdf;
+  background-color: #008080;
+}
+
+/* ── Title bar: solid navy, white text (NT 4.0 bars had no gradient) ──
+ * The dashboard pins the header background with !important for reduced
+ * transparency and accessibility; the html[data-theme] prefix plus !important
+ * outranks those (0,3,1 vs 0,2,1) without touching any other surface. */
+html[data-theme] .topbar.topbar-glass {
+  background: #000080 !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  color: #ffffff;
+  box-shadow: inset 0 -1px #0a0a0a, inset 0 -2px #808080;
+  --text: #ffffff;
+  --text-strong: #ffffff;
+  --muted: #d4dcff;
+  --muted-strong: #ffffff;
+  --accent: #ffff80;
+  --accent-fg: #000080;
+  --bg-hover: rgba(255, 255, 255, 0.18);
+  --border: #c0c0c0;
+}
+
+/* ── Session list / roster: a raised window frame ── */
+.sidebar {
+  border-color: transparent;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px #808080, inset 2px 2px #ffffff;
+}
+[data-theme="custom-kiront-light"] .sidebar {
+  background-color: #c0c0c0;
+  --bg-hover: #d8d8d8;
+}
+[data-theme="custom-kiront-dark"] .sidebar {
+  background-color: #000000;
+}
+
+/* ── Chat history: a sunken document well ── */
+.chat-container {
+  box-shadow: inset 1px 1px #808080, inset -1px -1px #ffffff, inset 2px 2px #0a0a0a, inset -2px -2px #dfdfdf;
+}
+[data-theme="custom-kiront-light"] .chat-container {
+  background-color: #ffffff;
+}
+[data-theme="custom-kiront-dark"] .chat-container {
+  background-color: #000000;
+}
+
+/* ── Your messages: a tooltip-yellow note (light) / navy selection (dark) ── */
+.message-bubble.user-bubble {
+  border: 1px solid #0a0a0a;
+  box-shadow: 2px 2px 0 #808080;
+}
+[data-theme="custom-kiront-light"] .message-bubble.user-bubble {
+  background-color: #ffffe1;
+  color: #000000;
+  --card-fg: #000000;
+  --text: #000000;
+  --accent-fg: #000000;
+}
+[data-theme="custom-kiront-dark"] .message-bubble.user-bubble {
+  background-color: #000080;
+  color: #ffffff;
+  border-color: #c0c0c0;
+  --card-fg: #ffffff;
+  --text: #ffffff;
+  --muted: #d4dcff;
+  --accent: #ffff80;
+  --accent-fg: #ffffff;
+}
+
+/* ── Composer: a raised silver panel; the text field inside reads as sunken ── */
+.input-area {
+  background-color: #c0c0c0;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+  --text: #000000;
+  --muted: #404040;
+  --border: #808080;
+}
+[data-theme="custom-kiront-light"] .input-area {
+  --card: #ffffff;
+  --bg-elevated: #ffffff;
+}
+[data-theme="custom-kiront-dark"] .input-area {
+  --card: #ffffff;
+  --bg-elevated: #ffffff;
+  --card-fg: #000000;
+  --muted-strong: #202020;
+  --accent: #000080;
+  --accent-fg: #ffffff;
+  --bg-hover: #d8d8d8;
+}
+
+/* ── Code: a sunken field ── */
+.code-block {
+  border-color: transparent;
+  box-shadow: inset 1px 1px #808080, inset -1px -1px #ffffff, inset 2px 2px #0a0a0a, inset -2px -2px #dfdfdf;
+}
+[data-theme="custom-kiront-light"] .code-block {
+  background-color: #ffffff;
+}
+[data-theme="custom-kiront-dark"] .code-block {
+  background-color: #000000;
+}
+
+/* ── Primary action: the default push button (silver face, black ring) ── */
+button.primary {
+  background: #c0c0c0;
+  color: #000000;
+  border: 1px solid #0a0a0a;
+  border-radius: 0;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+button.primary:hover {
+  background: #c8c8c8;
+  color: #000000;
+}
+button.primary:active {
+  box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+}
+button.primary:focus-visible {
+  outline: 1px dotted #000000;
+  outline-offset: -5px;
+}
+button.primary:disabled {
+  color: #808080;
+  text-shadow: 1px 1px 0 #ffffff;
+}

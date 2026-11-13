@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  /* The desktop behind Kiro Crew's panels: it shows in the gaps between them.
+     Light mode is the classic teal; dark mode is a deep teal so silver text
+     that lands on it stays readable. */
+  html, body { margin: 0; height: 100%; }
+  body { background: #008080; transition: background-color .2s; }
+  body.dark { background: #004848; }
+</style>
+</head>
+<body>
+<script>
+  window.addEventListener('message', function (e) {
+    var d = e.data || {};
+    if (d.type === 'theme:state') document.body.className = d.mode === 'dark' ? 'dark' : '';
+  });
+</script>
+</body>
+</html>

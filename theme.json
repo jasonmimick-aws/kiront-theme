@@ -1,0 +1,46 @@
+{
+  "slug": "kiront",
+  "name": "Kiro NT",
+  "emoji": "🗄️",
+  "level": 2,
+  "formatVersion": 1,
+  "branding": { "botName": "Kiro NT" },
+  "fonts": [
+    { "family": "Pixelify Sans", "file": "pixelify-sans.ttf", "weight": 400, "role": "sans" },
+    { "family": "Pixelify Sans", "file": "pixelify-sans.ttf", "weight": 500, "role": "sans" },
+    { "family": "Pixelify Sans", "file": "pixelify-sans.ttf", "weight": 600, "role": "sans" },
+    { "family": "Pixelify Sans", "file": "pixelify-sans.ttf", "weight": 700, "role": "sans" },
+    { "family": "VT323", "file": "vt323.ttf", "weight": 400, "role": "mono" }
+  ],
+  "overlays": [
+    {
+      "id": "desktop",
+      "src": "overlays/desktop.html",
+      "position": "fullscreen",
+      "layer": "behind",
+      "pointerEvents": false,
+      "animation": "none",
+      "trigger": "continuous"
+    },
+    {
+      "id": "logon",
+      "src": "overlays/logon.html",
+      "position": "center",
+      "layer": "above",
+      "zIndex": 40,
+      "pointerEvents": false,
+      "animation": "once",
+      "trigger": "activate"
+    },
+    {
+      "id": "screensaver",
+      "src": "overlays/screensaver.html",
+      "position": "fullscreen",
+      "layer": "above",
+      "zIndex": 42,
+      "pointerEvents": false,
+      "animation": "continuous",
+      "trigger": "idle-180s"
+    }
+  ]
+}

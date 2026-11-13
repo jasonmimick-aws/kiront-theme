@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  canvas { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+(function () {
+  // Kiro NT idle screensaver: a server console scrolling an (invented) event
+  // stream, with the Kiro NT badge drifting across it. Any input unmounts it.
+  var c = document.getElementById('c'), g = c.getContext('2d');
+  var W = 0, H = 0, LH = 18, lines = [], t = 0, running = true;
+  var SVC = ['gateway', 'scheduler', 'crew', 'memory', 'skills', 'mcp-bridge', 'spooler', 'heartbeat', 'subagents', 'tasks'];
+  var VERB = ['started', 'healthy', 'checkpoint written', 'queue drained', 'lease renewed', 'index compacted', 'tick ok', 'handshake ok', 'cache warm', 'idle'];
+  var WARN = ['retrying handshake', 'queue backlog 3', 'slow tick (1.2s)', 'lease renewal late'];
+  var LEVEL = [['INFO', '#a8a8a8'], ['INFO', '#a8a8a8'], ['INFO', '#a8a8a8'], [' OK ', '#3cc83c'], [' OK ', '#3cc83c'], ['WARN', '#e0c040']];
+  var bx = 60, by = 60, vx = 0.7, vy = 0.5;
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function line(ago) {
+    var d = new Date(Date.now() - (ago || 0) * 1000), lv = LEVEL[(Math.random() * LEVEL.length) | 0];
+    var pool = lv[0] === 'WARN' ? WARN : VERB;
+    var s = SVC[(Math.random() * SVC.length) | 0], v = pool[(Math.random() * pool.length) | 0];
+    return { ts: pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()), lv: lv[0], col: lv[1], text: s + ': ' + v };
+  }
+  function resize() {
+    W = c.width = window.innerWidth; H = c.height = window.innerHeight;
+    var n = Math.ceil(H / LH); lines = []; for (var i = 0; i < n; i++) lines.push(line((n - i) * 0.7));
+  }
+  function frame() {
+    if (!running) return;
+    t++;
+    if (t % 22 === 0) { lines.push(line()); if (lines.length > Math.ceil(H / LH) + 1) lines.shift(); }
+    g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
+    g.font = '15px "VT323", Menlo, monospace';
+    var y0 = H - lines.length * LH;
+    for (var i = 0; i < lines.length; i++) {
+      var L = lines[i], y = y0 + i * LH + 14;
+      g.fillStyle = '#606060'; g.fillText(L.ts, 12, y);
+      g.fillStyle = L.col; g.fillText('[' + L.lv + ']', 90, y);
+      g.fillStyle = '#c0c0c0'; g.fillText(L.text, 150, y);
+    }
+    // Drifting badge
+    var bw = 220, bh = 64;
+    bx += vx; by += vy;
+    if (bx < 0 || bx + bw > W) vx = -vx;
+    if (by < 0 || by + bh > H) vy = -vy;
+    g.fillStyle = '#000080'; g.fillRect(bx, by, bw, bh);
+    g.fillStyle = '#c0c0c0'; g.fillRect(bx, by, bw, 2); g.fillRect(bx, by, 2, bh);
+    g.fillStyle = '#404040'; g.fillRect(bx, by + bh - 2, bw, 2); g.fillRect(bx + bw - 2, by, 2, bh);
+    g.font = '900 28px "Arial Black", Helvetica, sans-serif';
+    g.fillStyle = '#ffffff'; g.fillText('Kiro', bx + 18, by + 42);
+    g.fillStyle = '#ffb000'; g.fillText('NT', bx + 18 + g.measureText('Kiro ').width, by + 42);
+    g.font = '12px Tahoma, sans-serif'; g.fillStyle = '#c8d0ff'; g.fillText('Workstation locked', bx + 18, by + 58);
+    requestAnimationFrame(frame);
+  }
+  window.addEventListener('message', function (e) { var d = e.data || {}; if (d.type === 'theme:state' && d.reducedMotion) running = false; });
+  window.addEventListener('resize', resize);
+  resize(); requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
